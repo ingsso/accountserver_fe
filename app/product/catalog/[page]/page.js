@@ -28,6 +28,7 @@ export default async function ProductCatalogPage({ params, searchParams }) {
     { next: { revalidate: 60 } }
   );
 
+  console.log('res', res);
   const result = await res.json();
 
   console.log(result);

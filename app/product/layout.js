@@ -1,6 +1,11 @@
 import Link from 'next/link';
+import { getServerSession } from 'next-auth'; // 세션 가져오기
+import { authOptions } from '../api/auth/[...nextauth]/route'; // 인증 설정
 
-export default function ProductLayout({ children }) {
+// async => 서버 컴포넌트에서 비동기 호출을 위함
+export default async function ProductLayout({ children }) {
+  const session = await getServerSession(authOptions);
+
   return (
     <>
       <header className="fixed top-0 left-0 w-full bg-white shadow-md z-50">
@@ -15,12 +20,22 @@ export default function ProductLayout({ children }) {
             >
               상품 카탈로그
             </Link>
-            <Link
-              href="/account/signin"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300"
-            >
-              로그인
-            </Link>
+
+            {session ? (
+              <Link
+                href="/account/signout"
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-300"
+              >
+                로그아웃
+              </Link>
+            ) : (
+              <Link
+                href="/account/signin"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300"
+              >
+                로그인
+              </Link>
+            )}
           </nav>
         </div>
       </header>

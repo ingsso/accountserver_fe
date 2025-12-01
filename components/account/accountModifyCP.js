@@ -1,50 +1,49 @@
-'use client'
+'use client';
 
-import { putAccount } from "@/actions/accountActions";
-import { useSession, signOut } from "next-auth/react";
-import { useActionState, useEffect} from "react";
-
+import { putAccount } from '@/actions/accountActions';
+import { useSession, signOut } from 'next-auth/react';
+import { useActionState, useEffect } from 'react';
 
 export default function AccountModifyCP() {
+  const { data, status, update } = useSession();
 
- const {data, status, update} = useSession()
+  const [state, action, isPending] = useActionState(putAccount, {
+    message: '',
+    result: '',
+  });
 
- const [state, action, isPending] = useActionState(putAccount, {message:'', result:''})
+  useEffect(() => {
+    if (state.result === 'success') {
+      alert('다시 로그인 필요');
+      signOut({ callbackUrl: '/' });
+    }
+  }, [state]);
 
- useEffect(() => {
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
 
-   if(state.result === 'success') {
+  const { email, name } = data?.user;
 
-     alert('다시 로그인 필요')
-     signOut({callbackUrl:'/'})
-   }
- },[state])
-
- if (status === 'loading') {
-     return <div>Loading...</div>;
- }
-
- const {email, name} = data?.user
-
- return (
-   <div>
-     <div>Account Modify Component</div>
-     <form action={action}>
-       <div>
-         Email <input type="text" name="email" defaultValue={email} readOnly></input>
-       </div>
-       <div>
-         Nickname <input type="text" name="nickname" defaultValue={name}></input>
-       </div>
-       <div>
-         Password <input type="password" name="password" ></input>
-       </div>
-       <button type="submit" disabled={isPending}>
-         {isPending ? '저장 중...' : '저장하기'}
-       </button>
-     </form>
-   </div>
- )
-
-
+  return (
+    <div>
+      <div>Account Modify Component</div>
+      <form action={action}>
+        <div>
+          Email{' '}
+          <input type="text" name="email" defaultValue={email} readOnly></input>
+        </div>
+        <div>
+          Nickname{' '}
+          <input type="text" name="nickname" defaultValue={name}></input>
+        </div>
+        <div>
+          Password <input type="password" name="password"></input>
+        </div>
+        <button type="submit" disabled={isPending}>
+          {isPending ? '저장 중...' : '저장하기'}
+        </button>
+      </form>
+    </div>
+  );
 }
